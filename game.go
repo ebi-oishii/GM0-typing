@@ -65,6 +65,7 @@ type model struct {
 	agents        []Agent
 	multiplier    int
 	alert         bool
+	aiIdle        bool // AIはいるが誰も働いていない（仕事を振るまでロック）
 	aiTyping      bool   // AIペインへの指示入力中と推定（評価上昇）
 	lastFocusPane string // 前回ポーリングでフォーカスされていたエージェントペイン
 	lastTailHash  uint64 // そのペインの前回の画面ハッシュ
@@ -181,7 +182,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 		m.alert = attention > 0
-		if m.alert {
+		// AIのジョブが終わった後に遊び続けるのは許されない。
+		// 監視対象がいるのに誰も働いていなければ、次の仕事を振るまでロック。
+		m.aiIdle = len(m.agents) > 0 && working == 0 && attention == 0
+		if m.alert || m.aiIdle {
 			m.multiplier = 0
 		} else {
 			m.multiplier = 1 + working
@@ -231,6 +235,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.alert {
 				// AIを待たせている間の打鍵は「サボり」なのでカウントしない
 				m.flash("⚠ AI対応が先です（この打鍵はカウントされません）")
+				return m, nil
+			}
+			if m.aiIdle {
+				m.flash("💤 AIが暇しています（次のタスクを振ってください）")
 				return m, nil
 			}
 			s := msg.String()

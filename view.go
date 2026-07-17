@@ -70,6 +70,8 @@ func (m model) View() string {
 	switch {
 	case m.alert:
 		multStr = sBad.Render("倍率 x0（サボり判定中）")
+	case m.aiIdle:
+		multStr = sWarn.Render("倍率 x0（AI待機中）")
 	case m.multiplier > 1:
 		multStr = sGood.Render(fmt.Sprintf("%s 倍率 x%d（AI %d体が稼働中）",
 			spinnerFrames[m.spin], m.multiplier, m.multiplier-1))
@@ -146,6 +148,18 @@ func (m model) View() string {
 			msg = append(msg, sSub.Render("対応が終わって AI が働き始めると再開できます"))
 		}
 		line(sAlertBox.Width(inner - 2).Render(strings.Join(msg, "\n")))
+	} else if m.aiIdle {
+		msg := []string{sWarn.Render("💤 業務連絡: AIが暇しています")}
+		for _, a := range m.agents {
+			msg = append(msg, fmt.Sprintf("  %s %s（%s / %s）",
+				statusIcon(a.Status, m.spin), a.Name, a.Status, a.Where))
+		}
+		if m.aiTyping {
+			msg = append(msg, sGood.Render("⌨ 指示の入力を検知（メーター回復中）"))
+		} else {
+			msg = append(msg, sSub.Render("次のタスクを振るとゲームを再開できます（指示の入力中は評価も回復）"))
+		}
+		line(sBreakBox.Width(inner - 2).Render(strings.Join(msg, "\n")))
 	} else {
 		line(sPhraseBox.Width(inner - 2).Render(m.renderPhrase()))
 	}

@@ -101,6 +101,43 @@ func TestGameOver(t *testing.T) {
 	}
 }
 
+func TestAIIdleLock(t *testing.T) {
+	m := newModel(Config{})
+
+	// AIはいるが誰も働いていない → ロック
+	m = applyPoll(t, m, aiPoll{Agents: []Agent{{Name: "claude", Status: "idle"}}})
+	if !m.aiIdle || m.multiplier != 0 {
+		t.Fatalf("全員 idle ならロックのはず: aiIdle=%v mult=%d", m.aiIdle, m.multiplier)
+	}
+	before := m.taps
+	next, _ := m.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{'x'}})
+	m = next.(model)
+	if m.taps != before {
+		t.Error("AI待機中の打鍵はカウントされないはず")
+	}
+
+	// 仕事を振って working になれば再開（倍率も復活）
+	m = applyPoll(t, m, aiPoll{Agents: []Agent{{Name: "claude", Status: "working"}}})
+	if m.aiIdle || m.multiplier != 2 {
+		t.Errorf("working がいれば再開して x2 のはず: aiIdle=%v mult=%d", m.aiIdle, m.multiplier)
+	}
+
+	// blocked が混ざれば idle ロックではなく alert が優先
+	m = applyPoll(t, m, aiPoll{Agents: []Agent{
+		{Name: "claude", Status: "idle"},
+		{Name: "codex", Status: "blocked"},
+	}})
+	if m.aiIdle || !m.alert {
+		t.Errorf("blocked は alert 扱いのはず: aiIdle=%v alert=%v", m.aiIdle, m.alert)
+	}
+
+	// 監視対象が1体もいなければソロ稼働モードで遊べる
+	m = applyPoll(t, m, aiPoll{})
+	if m.aiIdle || m.alert || m.multiplier != 1 {
+		t.Errorf("AIなしはソロ x1 のはず: aiIdle=%v alert=%v mult=%d", m.aiIdle, m.alert, m.multiplier)
+	}
+}
+
 func TestBreakMode(t *testing.T) {
 	m := newModel(Config{})
 
