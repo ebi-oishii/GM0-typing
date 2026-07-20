@@ -61,7 +61,7 @@ func (m model) View() string {
 	line := func(s string) { b.WriteString(s + "\n") }
 
 	// タイトル
-	title := sTitle.Render(" PECKR ") + sSub.Render("─ 評価防衛型タイピング ─ あなたの評価はタイピング数で決まる（らしい）")
+	title := sTitle.Render(" GM0-typing ") + sSub.Render("─ 評価防衛型タイピング ─ あなたの評価はタイピング数で決まる（らしい）")
 	line(title)
 	line("")
 

@@ -1,4 +1,4 @@
-module peckr
+module gm0-typing
 
 go 1.26.2
 

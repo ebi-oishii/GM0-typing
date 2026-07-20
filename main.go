@@ -1,4 +1,4 @@
-// peckr — 評価防衛型タイピングゲーム
+// GM0-typing — 評価防衛型タイピングゲーム
 //
 // AI時代、エンジニアの生産性がタイピング量で測られてしまったあなたへ。
 // 右のペインでAIを働かせ、左のペインで打鍵数を稼ぎ、評価を守り抜け。
@@ -29,7 +29,7 @@ func defaultDataDir() string {
 	if err != nil {
 		return "."
 	}
-	return filepath.Join(home, ".local", "share", "peckr")
+	return filepath.Join(home, ".local", "share", "gm0-typing")
 }
 
 func main() {
@@ -53,7 +53,7 @@ func main() {
 	p := tea.NewProgram(newModel(cfg), tea.WithAltScreen())
 	finalModel, err := p.Run()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "peckr:", err)
+		fmt.Fprintln(os.Stderr, "gm0-typing:", err)
 		os.Exit(1)
 	}
 	if m, ok := finalModel.(model); ok {

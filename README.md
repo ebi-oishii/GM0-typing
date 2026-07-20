@@ -1,17 +1,17 @@
-# PECKR — 評価防衛型タイピングゲーム
+# GM0-typing — 評価防衛型タイピングゲーム
 
 > あなたの評価はタイピング数で決まる（らしい）。
 
 エンジニアの生産性をタイピング量で測る会社が現れたAI時代。
 コードはAIが書く。ならば人間は、**AIが働いている間に打鍵数を稼ぐしかない**。
 
-PECKR は [herdr](https://herdr.dev) のようなターミナルマルチプレクサでペインを分割し、
+GM0-typing は [herdr](https://herdr.dev) のようなターミナルマルチプレクサでペインを分割し、
 **右でAIエージェントを働かせながら、左で入力数を稼ぐ**ための TUI タイピングゲームです。
 隣のペインで動くAIの状態をリアルタイムに監視し、ゲームルールに反映します。
 
 ```
 ┌──────────────────────────┬──────────────────────────┐
-│  PECKR ─ 評価防衛型タイピング │  $ claude                │
+│  GM0-typing ─ 評価防衛型タイピング │  $ claude                │
 │                          │                          │
 │  申告用入力数 12,345 打     │  ⏺ リファクタリング中...    │
 │  倍率 x2（AI 1体が稼働中）   │                          │
@@ -58,8 +58,8 @@ PECKR は [herdr](https://herdr.dev) のようなターミナルマルチプレ�
 ## ビルドと起動
 
 ```sh
-go build -o peckr .
-./peckr
+go build -o gm0-typing .
+./gm0-typing
 ```
 
 ## herdr との連携（推奨）
@@ -72,7 +72,7 @@ herdr のペイン内で起動すると自動で連携します（`HERDR_ENV=1` 
 # herdr 内で: ペインを分割して右でAIを起動、左で稼ぐ
 herdr pane split --current --direction right
 herdr pane run <new-pane-id> "claude"
-./peckr   # 元のペインで
+./gm0-typing   # 元のペインで
 ```
 
 ## herdr 以外での連携（Claude Code hooks / tmux など）
@@ -80,7 +80,7 @@ herdr pane run <new-pane-id> "claude"
 ステータスファイル経由で任意のツールから状態を通知できます。
 
 ```sh
-./peckr --status-file ~/.local/share/peckr/status.json   # デフォルトと同じ
+./gm0-typing --status-file ~/.local/share/gm0-typing/status.json   # デフォルトと同じ
 ```
 
 ファイル形式（10分以上更新がないファイルは無視されます）:
@@ -107,11 +107,11 @@ Claude Code の hooks から自動通知するには `~/.claude/settings.json` �
 
 | フラグ | 説明 |
 |---|---|
-| `--status-file PATH` | ステータスファイルの場所（デフォルト: `~/.local/share/peckr/status.json`） |
+| `--status-file PATH` | ステータスファイルの場所（デフォルト: `~/.local/share/gm0-typing/status.json`） |
 | `--no-herdr` | herdr 連携を無効化 |
 | `--poll DURATION` | AI状態のポーリング間隔（デフォルト: `2s`） |
 
-日次成績は `~/.local/share/peckr/stats.json` に保存されます。
+日次成績は `~/.local/share/gm0-typing/stats.json` に保存されます。
 
 ## 免責
 
